@@ -301,7 +301,8 @@
             await response.json();
 
             textarea.value = "";
-            location.reload();
+            textarea.focus();
+            showToast("Solution added successfully!");
         } catch (error) {
             console.error("Add solution error:", error);
         }

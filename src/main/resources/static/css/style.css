@@ -671,12 +671,3 @@ nav a:hover{
 .comment-text {
     color: #111827 !important;
 }
-.solution-card,
-.solution-card p,
-.solution-meta,
-.solution-meta a,
-.like-count,
-.like-btn,
-.toggle-comments-btn {
-    color: #111827 !important;
-}
