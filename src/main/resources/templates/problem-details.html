@@ -48,7 +48,7 @@
         </section>
 
         <section class="card">
-            <div class="section-header">
+            <section class="card" id="solutions-section">
                 <h2>Solutions</h2>
             </div>
 
@@ -297,7 +297,7 @@
                     if (!response.ok) throw new Error("Add solution failed");
 
                     const data = await response.json();
-                    const solutionsSection = document.querySelector(".main-container .card:nth-of-type(2)");
+                    const solutionsSection = document.getElementById("solutions-section");
                     const emptyState = solutionsSection ? solutionsSection.querySelector(".empty-state") : null;
 
                     if (emptyState) {
