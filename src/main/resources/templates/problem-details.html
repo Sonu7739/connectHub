@@ -23,7 +23,8 @@
                 <p class="meta">
                     Posted by:
                     <span th:if="${problemData.user != null}">
-                        <a th:href="@{'/profile/' + ${problemData.user.username}}" th:text="${problemData.user.username}"></a>
+                        <a th:href="@{'/profile/' + ${problemData.user.username}}"
+                           th:text="${problemData.user.username}"></a>
                     </span>
                     <span th:if="${problemData.user == null}">Unknown User</span>
                 </p>
@@ -47,8 +48,8 @@
             </div>
         </section>
 
-        <section class="card">
-            <section class="card" id="solutions-section">
+        <section class="card" id="solutions-section">
+            <div class="section-header">
                 <h2>Solutions</h2>
             </div>
 
@@ -61,13 +62,14 @@
                  th:id="'solution-' + ${solution.id}">
 
                 <div class="solution-content">
-                    <p th:text="${solution.content}"></p>
+                    <p th:text="${solution.content}" style="color:#111827;"></p>
                 </div>
 
                 <div class="solution-meta">
                     By:
                     <span th:if="${solution.user != null}">
-                        <a th:href="@{'/profile/' + ${solution.user.username}}" th:text="${solution.user.username}"></a>
+                        <a th:href="@{'/profile/' + ${solution.user.username}}"
+                           th:text="${solution.user.username}"></a>
                     </span>
                     <span th:if="${solution.user == null}">Unknown User</span>
                 </div>
@@ -75,18 +77,20 @@
                 <div class="solution-actions">
                     <button type="button"
                             class="like-btn ajax-like-btn"
-                            th:attr="data-solution-id=${solution.id}">
+                            th:attr="data-solution-id=${solution.id}"
+                            style="color:#111827;">
                         💙 Like
                     </button>
 
                     <span class="like-count"
                           th:id="'like-count-' + ${solution.id}">
-    0 likes
-</span>
+                        0 likes
+                    </span>
 
                     <button type="button"
                             class="secondary-btn toggle-comments-btn"
-                            th:attr="data-target='comments-box-' + ${solution.id}">
+                            th:attr="data-target='comments-box-' + ${solution.id}"
+                            style="color:#111827;">
                         Comment
                     </button>
 
@@ -309,7 +313,7 @@
                     newCard.id = `solution-${data.solutionId}`;
                     newCard.innerHTML = `
                         <div class="solution-content">
-                            <p>${escapeHtml(data.content)}</p>
+                            <p style="color:#111827;">${escapeHtml(data.content)}</p>
                         </div>
 
                         <div class="solution-meta">
@@ -322,7 +326,8 @@
                         <div class="solution-actions">
                             <button type="button"
                                     class="like-btn ajax-like-btn"
-                                    data-solution-id="${data.solutionId}">
+                                    data-solution-id="${data.solutionId}"
+                                    style="color:#111827;">
                                 💙 Like
                             </button>
 
@@ -330,7 +335,8 @@
 
                             <button type="button"
                                     class="secondary-btn toggle-comments-btn"
-                                    data-target="comments-box-${data.solutionId}">
+                                    data-target="comments-box-${data.solutionId}"
+                                    style="color:#111827;">
                                 Comment
                             </button>
                         </div>
@@ -350,17 +356,17 @@
 
                     if (solutionsSection) {
                         solutionsSection.appendChild(newCard);
-                    }
 
-                    attachLikeHandler(newCard.querySelector(".ajax-like-btn"));
-                    attachToggleHandler(newCard.querySelector(".toggle-comments-btn"));
-                    attachCommentHandler(newCard.querySelector(".ajax-comment-form"));
+                        attachLikeHandler(newCard.querySelector(".ajax-like-btn"));
+                        attachToggleHandler(newCard.querySelector(".toggle-comments-btn"));
+                        attachCommentHandler(newCard.querySelector(".ajax-comment-form"));
+                    }
 
                     textarea.value = "";
                     showToast("Solution added successfully!");
                 } catch (error) {
                     console.error(error);
-                    alert("Something went wrong while adding the solution.");
+                    location.reload();
                 }
             });
         }
