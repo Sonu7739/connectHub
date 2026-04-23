@@ -671,3 +671,51 @@ nav a:hover{
 .comment-text {
     color: #111827 !important;
 }
+/* ===== Open Discussion Solution Box Premium Visibility ===== */
+
+.solution-card {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 16px;
+    padding: 18px;
+    margin-top: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.solution-content p {
+    color: #111827 !important;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+.solution-meta,
+.solution-meta a {
+    color: #4b5563 !important;
+    font-size: 14px;
+}
+
+.solution-actions {
+    margin-top: 14px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.like-count {
+    color: #111827 !important;
+    font-weight: 600;
+}
+
+.comments-section {
+    background: #f9fafb !important;
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 12px;
+}
+
+.comments-section h5,
+.comment-user,
+.comment-text {
+    color: #111827 !important;
+}
