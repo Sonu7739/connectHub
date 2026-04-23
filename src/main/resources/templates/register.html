@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>ConnectHub Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body{
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background: linear-gradient(135deg,#0f172a,#1e3a8a,#06b6d4);
+        }
+
+        .register-container{
+            width:420px;
+            padding:40px;
+            border-radius:20px;
+            background: rgba(255,255,255,0.12);
+            border:1px solid rgba(255,255,255,0.25);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-shadow:0 8px 32px rgba(0,0,0,0.35);
+            color:white;
+        }
+
+        .register-container h2{
+            text-align:center;
+            margin-bottom:25px;
+            font-size:28px;
+        }
+
+        .input-group{
+            margin-bottom:18px;
+        }
+
+        .input-group label{
+            display:block;
+            margin-bottom:6px;
+            font-size:14px;
+        }
+
+        .input-box{
+            width:100%;
+            padding:13px;
+            border-radius:12px;
+            border:1px solid rgba(255,255,255,0.25);
+            background:rgba(255,255,255,0.15);
+            color:white;
+            font-size:14px;
+        }
+
+        .input-box::placeholder{
+            color:rgba(255,255,255,0.7);
+        }
+
+        .input-box:focus{
+            outline:none;
+            border-color:white;
+            background:rgba(255,255,255,0.25);
+        }
+
+        .register-btn{
+            width:100%;
+            padding:14px;
+            border:none;
+            border-radius:12px;
+            margin-top:10px;
+            background:white;
+            color:#1e293b;
+            font-weight:bold;
+            font-size:16px;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        .register-btn:hover{
+            transform:translateY(-2px);
+            background:#f1f5f9;
+        }
+
+        .login-link{
+            margin-top:20px;
+            text-align:center;
+            font-size:14px;
+        }
+
+        .login-link a{
+            color:white;
+            font-weight:bold;
+            text-decoration:none;
+        }
+
+        .login-link a:hover{
+            text-decoration:underline;
+        }
+
+        .brand{
+            text-align:center;
+            margin-bottom:20px;
+        }
+
+        .brand h1{
+            font-size:30px;
+        }
+
+        .brand p{
+            font-size:14px;
+            opacity:0.9;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="register-container">
+
+    <div class="brand">
+        <h1>ConnectHub</h1>
+        <p>Create your account</p>
+    </div>
+
+    <form th:action="@{/register}" method="post" th:object="${user}">
+
+        <div class="input-group">
+            <label>Username</label>
+            <input type="text" th:field="*{username}" class="input-box" placeholder="Enter username" required>
+        </div>
+
+        <div class="input-group">
+            <label>Email</label>
+            <input type="email" th:field="*{email}" class="input-box" placeholder="Enter email" required>
+        </div>
+
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" th:field="*{password}" class="input-box" placeholder="Enter password" required>
+        </div>
+
+        <button type="submit" class="register-btn">Create Account</button>
+
+    </form>
+
+    <div class="login-link">
+        Already have an account?
+        <a th:href="@{/login}">Login</a>
+    </div>
+
+</div>
+
+</body>
+</html>
+

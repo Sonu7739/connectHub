@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Profile - ConnectHub</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="page-wrapper">
+    <div class="main-container">
+
+        <section class="profile-hero card">
+            <div class="profile-top">
+                <div class="profile-avatar"
+                     th:text="${userData.username != null and !#strings.isEmpty(userData.username) ? #strings.substring(userData.username,0,1).toUpperCase() : 'U'}">
+                </div>
+
+                <div class="profile-info">
+                    <h1 th:text="${userData.username}"></h1>
+                    <p th:text="${userData.email}"></p>
+                    <span class="profile-role" th:text="${userData.role}"></span>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 th:text="${userData.problems != null ? #lists.size(userData.problems) : 0}"></h3>
+                    <p>Problems Posted</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3 th:text="${userData.solutions != null ? #lists.size(userData.solutions) : 0}"></h3>
+                    <p>Solutions Posted</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="section-header">
+                <h2>My Problems</h2>
+            </div>
+
+            <div th:if="${userData.problems == null or #lists.isEmpty(userData.problems)}" class="empty-state">
+                <p>No problems posted yet.</p>
+            </div>
+
+            <div class="mini-card" th:each="problem : ${userData.problems}">
+                <div class="mini-card-header">
+                    <h3 th:text="${problem.title}"></h3>
+                    <span class="mini-date" th:text="${problem.createdAt}"></span>
+                </div>
+                <p th:text="${problem.description}"></p>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="section-header">
+                <h2>My Solutions</h2>
+            </div>
+
+            <div th:if="${userData.solutions == null or #lists.isEmpty(userData.solutions)}" class="empty-state">
+                <p>No solutions posted yet.</p>
+            </div>
+
+            <div class="mini-card" th:each="solution : ${userData.solutions}">
+                <div class="mini-card-header">
+                    <h3>Solution</h3>
+                    <span class="mini-date" th:text="${solution.createdAt}"></span>
+                </div>
+                <p th:text="${solution.content}"></p>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+</body>
+</html>

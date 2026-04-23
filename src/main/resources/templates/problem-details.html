@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Problem Details - ConnectHub</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div th:if="${successMessage}" class="toast-msg">
+    <span th:text="${successMessage}"></span>
+</div>
+
+<div class="page-wrapper">
+    <div class="main-container">
+
+        <section class="problem-card card" th:id="'problem-' + ${problemData.id}">
+            <div class="problem-header">
+                <h2 th:text="${problemData.title}"></h2>
+                <p class="problem-description" th:text="${problemData.description}"></p>
+
+                <p class="meta">
+                    Posted by:
+                    <span th:if="${problemData.user != null}">
+                        <a th:href="@{'/profile/' + ${problemData.user.username}}" th:text="${problemData.user.username}"></a>
+                    </span>
+                    <span th:if="${problemData.user == null}">Unknown User</span>
+                </p>
+
+                <p class="meta" th:text="${problemData.createdAt}"></p>
+
+                <div th:if="${problemData.user != null and currentUsername == problemData.user.username}"
+                     style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+                    <a th:href="@{'/problem/' + ${problemData.id} + '/edit'}" class="primary-link-btn">
+                        Edit Problem
+                    </a>
+
+                    <form th:action="@{'/problem/' + ${problemData.id} + '/delete'}" method="post">
+                        <button type="submit"
+                                class="secondary-btn"
+                                onclick="return confirm('Delete this problem permanently?')">
+                            Delete Problem
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="section-header">
+                <h2>Solutions</h2>
+            </div>
+
+            <div th:if="${solutions == null or #lists.isEmpty(solutions)}" class="empty-state">
+                <p>No solutions yet.</p>
+            </div>
+
+            <div class="solution-card"
+                 th:each="solution : ${solutions}"
+                 th:id="'solution-' + ${solution.id}">
+
+                <div class="solution-content">
+                    <p th:text="${solution.content}"></p>
+                </div>
+
+                <div class="solution-meta">
+                    By:
+                    <span th:if="${solution.user != null}">
+                        <a th:href="@{'/profile/' + ${solution.user.username}}" th:text="${solution.user.username}"></a>
+                    </span>
+                    <span th:if="${solution.user == null}">Unknown User</span>
+                </div>
+
+                <div class="solution-actions">
+                    <button type="button"
+                            class="like-btn ajax-like-btn"
+                            th:attr="data-solution-id=${solution.id}">
+                        💙 Like
+                    </button>
+
+                    <span class="like-count"
+                          th:id="'like-count-' + ${solution.id}">
+    0 likes
+</span>
+
+                    <button type="button"
+                            class="secondary-btn toggle-comments-btn"
+                            th:attr="data-target='comments-box-' + ${solution.id}">
+                        Comment
+                    </button>
+
+                    <a th:if="${solution.user != null and currentUsername == solution.user.username}"
+                       th:href="@{'/solution/' + ${solution.id} + '/edit'}"
+                       class="primary-link-btn">
+                        Edit
+                    </a>
+
+                    <form th:if="${solution.user != null and currentUsername == solution.user.username}"
+                          th:action="@{'/solution/' + ${solution.id} + '/delete'}"
+                          method="post">
+                        <button type="submit"
+                                class="secondary-btn"
+                                onclick="return confirm('Delete this solution permanently?')">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+
+                <div class="comments-section hidden-comments"
+                     th:id="'comments-box-' + ${solution.id}">
+                    <h5>Comments</h5>
+
+                    <div class="comments-list" th:id="'comments-list-' + ${solution.id}">
+                    </div>
+
+                    <form action="javascript:void(0);"
+                          class="comment-form ajax-comment-form"
+                          th:attr="data-solution-id=${solution.id}">
+                        <input type="text"
+                               name="content"
+                               placeholder="Write a comment..."
+                               required>
+                        <button type="submit" class="primary-btn">Post</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="section-header">
+                <h2>Add Your Solution</h2>
+            </div>
+
+            <form action="javascript:void(0);"
+                  class="solution-form ajax-solution-form"
+                  th:attr="data-problem-id=${problemData.id}">
+                <textarea name="content" rows="4" placeholder="Write your solution..." required></textarea>
+                <button type="submit" class="primary-btn">Add Solution</button>
+            </form>
+        </section>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        function escapeHtml(text) {
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showToast(message) {
+            const oldToast = document.querySelector(".toast-msg.dynamic-toast");
+            if (oldToast) oldToast.remove();
+
+            const toast = document.createElement("div");
+            toast.className = "toast-msg dynamic-toast";
+            toast.innerHTML = `<span>${escapeHtml(message)}</span>`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3500);
+        }
+
+        function attachToggleHandler(button) {
+            if (!button) return;
+
+            button.addEventListener("click", function () {
+                const targetId = this.dataset.target;
+                const commentsBox = document.getElementById(targetId);
+
+                if (commentsBox) {
+                    commentsBox.classList.toggle("show-comments");
+
+                    if (commentsBox.classList.contains("show-comments")) {
+                        const input = commentsBox.querySelector("input[name='content']");
+                        if (input) input.focus();
+                    }
+                }
+            });
+        }
+
+        function attachLikeHandler(button) {
+            if (!button) return;
+
+            button.addEventListener("click", async function () {
+                const solutionId = this.dataset.solutionId;
+
+                try {
+                    const response = await fetch(`/api/solution/${solutionId}/like`, {
+                        method: "POST",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    });
+
+                    if (!response.ok) throw new Error("Like request failed");
+
+                    const data = await response.json();
+                    const likeCountElement = document.getElementById(`like-count-${solutionId}`);
+
+                    if (likeCountElement) {
+                        likeCountElement.textContent = `${data.likeCount} likes`;
+                    }
+
+                    this.textContent = data.liked ? "💙 Liked" : "💙 Like";
+                } catch (error) {
+                    console.error(error);
+                    alert("Something went wrong while liking the solution.");
+                }
+            });
+        }
+
+        function attachCommentHandler(form) {
+            if (!form) return;
+
+            form.addEventListener("submit", async function (e) {
+                e.preventDefault();
+
+                const solutionId = this.dataset.solutionId;
+                const input = this.querySelector('input[name="content"]');
+                const content = input.value.trim();
+
+                if (!content) return;
+
+                try {
+                    const formData = new URLSearchParams();
+                    formData.append("content", content);
+
+                    const response = await fetch(`/api/solution/${solutionId}/comment`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                        body: formData.toString()
+                    });
+
+                    if (!response.ok) throw new Error("Comment request failed");
+
+                    const data = await response.json();
+                    const commentsList = document.getElementById(`comments-list-${solutionId}`);
+                    const commentsBox = document.getElementById(`comments-box-${solutionId}`);
+
+                    if (commentsList) {
+                        const commentItem = document.createElement("div");
+                        commentItem.className = "comment-item";
+                        commentItem.innerHTML = `
+                            <span class="comment-user">${escapeHtml(data.username)}</span>
+                            <span class="comment-text">${escapeHtml(data.content)}</span>
+                        `;
+                        commentsList.appendChild(commentItem);
+                    }
+
+                    if (commentsBox) {
+                        commentsBox.classList.add("show-comments");
+                    }
+
+                    input.value = "";
+                    showToast("Comment added successfully!");
+                } catch (error) {
+                    console.error(error);
+                    alert("Something went wrong while adding the comment.");
+                }
+            });
+        }
+
+        function attachSolutionHandler(form) {
+            if (!form) return;
+
+            form.addEventListener("submit", async function (e) {
+                e.preventDefault();
+
+                const problemId = this.dataset.problemId;
+                const textarea = this.querySelector('textarea[name="content"]');
+                const content = textarea.value.trim();
+
+                if (!content) return;
+
+                try {
+                    const formData = new URLSearchParams();
+                    formData.append("content", content);
+
+                    const response = await fetch(`/api/problem/${problemId}/solution/add`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                        body: formData.toString()
+                    });
+
+                    if (!response.ok) throw new Error("Add solution failed");
+
+                    const data = await response.json();
+                    const solutionsSection = document.querySelector(".main-container .card:nth-of-type(2)");
+                    const emptyState = solutionsSection ? solutionsSection.querySelector(".empty-state") : null;
+
+                    if (emptyState) {
+                        emptyState.remove();
+                    }
+
+                    const newCard = document.createElement("div");
+                    newCard.className = "solution-card";
+                    newCard.id = `solution-${data.solutionId}`;
+                    newCard.innerHTML = `
+                        <div class="solution-content">
+                            <p>${escapeHtml(data.content)}</p>
+                        </div>
+
+                        <div class="solution-meta">
+                            By:
+                            <span>
+                                <a href="/profile/${encodeURIComponent(data.username)}">${escapeHtml(data.username)}</a>
+                            </span>
+                        </div>
+
+                        <div class="solution-actions">
+                            <button type="button"
+                                    class="like-btn ajax-like-btn"
+                                    data-solution-id="${data.solutionId}">
+                                💙 Like
+                            </button>
+
+                            <span class="like-count" id="like-count-${data.solutionId}">0 likes</span>
+
+                            <button type="button"
+                                    class="secondary-btn toggle-comments-btn"
+                                    data-target="comments-box-${data.solutionId}">
+                                Comment
+                            </button>
+                        </div>
+
+                        <div class="comments-section hidden-comments" id="comments-box-${data.solutionId}">
+                            <h5>Comments</h5>
+                            <div class="comments-list" id="comments-list-${data.solutionId}"></div>
+
+                            <form action="javascript:void(0);"
+                                  class="comment-form ajax-comment-form"
+                                  data-solution-id="${data.solutionId}">
+                                <input type="text" name="content" placeholder="Write a comment..." required>
+                                <button type="submit" class="primary-btn">Post</button>
+                            </form>
+                        </div>
+                    `;
+
+                    if (solutionsSection) {
+                        solutionsSection.appendChild(newCard);
+                    }
+
+                    attachLikeHandler(newCard.querySelector(".ajax-like-btn"));
+                    attachToggleHandler(newCard.querySelector(".toggle-comments-btn"));
+                    attachCommentHandler(newCard.querySelector(".ajax-comment-form"));
+
+                    textarea.value = "";
+                    showToast("Solution added successfully!");
+                } catch (error) {
+                    console.error(error);
+                    alert("Something went wrong while adding the solution.");
+                }
+            });
+        }
+
+        document.querySelectorAll(".ajax-like-btn").forEach(attachLikeHandler);
+        document.querySelectorAll(".toggle-comments-btn").forEach(attachToggleHandler);
+        document.querySelectorAll(".ajax-comment-form").forEach(attachCommentHandler);
+        document.querySelectorAll(".ajax-solution-form").forEach(attachSolutionHandler);
+
+    });
+</script>
+
+</body>
+</html>

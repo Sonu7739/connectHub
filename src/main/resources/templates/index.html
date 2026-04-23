@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>ConnectHub</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        .problem { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; }
+        .solution { margin-left: 20px; color: green; }
+        textarea { width: 100%; height: 80px; }
+        input, button { padding: 8px; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<h1>ConnectHub - Post Your Problem</h1>
+
+<!-- Add Problem Form -->
+<form th:action="@{/addProblem}" th:object="${newProblem}" method="post">
+    <input type="text" th:field="*{title}" placeholder="Enter Title" required><br>
+    <textarea th:field="*{description}" placeholder="Describe your problem..." required></textarea><br>
+    <button type="submit">Post Problem</button>
+</form>
+
+<hr>
+
+<h2>All Problems</h2>
+
+<div th:each="problem : ${problems}" class="problem">
+
+    <h3 th:text="${problem.title}"></h3>
+    <p th:text="${problem.description}"></p>
+    <small th:text="${problem.createdAt}"></small>
+
+    <h4>Solutions:</h4>
+
+    <div th:if="${problem.solutions != null}">
+        <div th:each="solution : ${problem.solutions}" class="solution">
+            <p th:text="${solution.solutionText}"></p>
+            <small th:text="${solution.createdAt}"></small>
+        </div>
+    </div>
+
+    <!-- Add Solution Form -->
+    <form th:action="@{/addSolution/{id}(id=${problem.id})}"
+          th:object="${newSolution}" method="post">
+
+        <textarea th:field="*{solutionText}"
+                  placeholder="Write your solution..." required></textarea>
+        <button type="submit">Add Solution</button>
+    </form>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="navbar" class="navbar">
+    <div class="nav-left">
+        <a th:href="@{/home}" class="logo">ConnectHub</a>
+    </div>
+
+    <div class="nav-links">
+        <a th:href="@{/home}">Home</a>
+        <a th:href="@{/search}">Search Users</a>
+        <a th:href="@{/profile}">My Profile</a>
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
+    </div>
+</nav>
+</body>
+</html>

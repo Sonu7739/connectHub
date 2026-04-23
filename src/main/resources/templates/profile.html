@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Profile - ConnectHub</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="page-wrapper">
+    <div class="main-container">
+
+        <section class="profile-hero card">
+            <div class="profile-top">
+
+                <div class="profile-avatar"
+                     th:text="${userData.username != null and !#strings.isEmpty(userData.username) ? #strings.substring(userData.username,0,1).toUpperCase() : 'U'}">
+                </div>
+
+                <div class="profile-info">
+                    <h1 th:text="${userData.username}">Username</h1>
+                    <p th:text="${userData.email}">email@example.com</p>
+                    <span class="profile-role" th:text="${userData.role}">ROLE_USER</span>
+
+                    <p class="profile-bio"
+                       th:if="${userData.bio != null and !#strings.isEmpty(userData.bio)}"
+                       th:text="${userData.bio}">
+                        User bio
+                    </p>
+
+                    <div class="profile-extra">
+
+                        <span th:if="${userData.college != null and !#strings.isEmpty(userData.college)}">
+                            College:
+                            <strong th:text="${userData.college}"></strong>
+                        </span>
+
+                        <span th:if="${userData.skills != null and !#strings.isEmpty(userData.skills)}">
+                            Skills:
+                            <strong th:text="${userData.skills}"></strong>
+                        </span>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <h3 th:text="${problemCount}">0</h3>
+                    <p>Problems Posted</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3 th:text="${solutionCount}">0</h3>
+                    <p>Solutions Posted</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- EDIT PROFILE -->
+        <section class="card" th:if="${isOwner}">
+            <div class="section-header">
+                <h2>Edit Profile</h2>
+            </div>
+
+            <form th:action="@{/profile/update}" method="post" class="profile-form">
+
+                <div class="form-group">
+                    <label for="bio">Bio</label>
+                    <textarea id="bio"
+                              name="bio"
+                              rows="4"
+                              placeholder="Write something about yourself..."
+                              th:text="${userData.bio}"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="college">College</label>
+                    <input type="text"
+                           id="college"
+                           name="college"
+                           placeholder="Enter your college"
+                           th:value="${userData.college}">
+                </div>
+
+                <div class="form-group">
+                    <label for="skills">Skills</label>
+                    <input type="text"
+                           id="skills"
+                           name="skills"
+                           placeholder="Java, Spring Boot, DSA..."
+                           th:value="${userData.skills}">
+                </div>
+
+                <div class="form-group">
+                    <label for="profileImage">Profile Image URL</label>
+                    <input type="text"
+                           id="profileImage"
+                           name="profileImage"
+                           placeholder="Paste image URL"
+                           th:value="${userData.profileImage}">
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    Update Profile
+                </button>
+
+            </form>
+        </section>
+
+        <!-- PROBLEMS -->
+        <section class="card">
+            <div class="section-header">
+                <h2 th:text="${isOwner ? 'My Problems' : 'Problems by ' + userData.username}">
+                    Problems
+                </h2>
+            </div>
+
+            <div th:if="${#lists.isEmpty(userProblems)}" class="empty-state">
+                <p>No problems posted yet.</p>
+            </div>
+
+            <div class="mini-card" th:each="problem : ${userProblems}">
+                <div class="mini-card-header">
+                    <h3 th:text="${problem.title}">Problem Title</h3>
+                    <span class="mini-date" th:text="${problem.createdAt}">date</span>
+                </div>
+
+                <p th:text="${problem.description}">Problem description</p>
+            </div>
+        </section>
+
+        <!-- SOLUTIONS -->
+        <section class="card">
+            <div class="section-header">
+                <h2 th:text="${isOwner ? 'My Solutions' : 'Solutions by ' + userData.username}">
+                    Solutions
+                </h2>
+            </div>
+
+            <div th:if="${#lists.isEmpty(userSolutions)}" class="empty-state">
+                <p>No solutions posted yet.</p>
+            </div>
+
+            <div class="mini-card" th:each="solution : ${userSolutions}">
+                <div class="mini-card-header">
+                    <h3>Solution</h3>
+                    <span class="mini-date" th:text="${solution.createdAt}">date</span>
+                </div>
+
+                <p th:text="${solution.content}">Solution content</p>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+</body>
+</html>

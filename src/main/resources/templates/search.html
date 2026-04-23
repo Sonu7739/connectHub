@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search Users - ConnectHub</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="page-wrapper">
+    <div class="main-container">
+
+        <section class="card search-page-card">
+            <div class="section-header">
+                <h2>Search Users</h2>
+                <p class="sub-text">Search by username and view public profiles.</p>
+            </div>
+
+            <form th:action="@{/search}" method="get" class="search-form">
+                <input type="text" name="keyword" th:value="${keyword}" placeholder="Search by username" required>
+                <button type="submit" class="primary-btn">Search</button>
+            </form>
+        </section>
+
+        <section class="search-results-grid" th:if="${users != null}">
+            <div class="card" th:each="user : ${users}">
+                <div class="user-card-top">
+                    <div class="user-avatar"
+                         th:text="${user.username != null and !#strings.isEmpty(user.username) ? #strings.substring(user.username,0,1).toUpperCase() : 'U'}"></div>
+
+                    <div class="user-card-info">
+                        <h3 th:text="${user.username}"></h3>
+                        <p th:text="${user.email}"></p>
+                    </div>
+                </div>
+
+                <a th:href="@{'/profile/' + ${user.username}}" class="primary-link-btn">View Profile</a>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+</body>
+</html>
