@@ -300,21 +300,21 @@
 
             await response.json();
 
-            textarea.value = "";
-            textarea.focus();
+            form.reset();
+
+            setTimeout(() => {
+                textarea.value = "";
+                textarea.innerHTML = "";
+                textarea.focus();
+            }, 50);
+
             showToast("Solution added successfully!");
+
         } catch (error) {
             console.error("Add solution error:", error);
         }
     });
 }
-
-        document.querySelectorAll(".ajax-like-btn").forEach(attachLikeHandler);
-        document.querySelectorAll(".toggle-comments-btn").forEach(attachToggleHandler);
-        document.querySelectorAll(".ajax-comment-form").forEach(attachCommentHandler);
-        document.querySelectorAll(".ajax-solution-form").forEach(attachSolutionHandler);
-
-    });
 </script>
 
 </body>
