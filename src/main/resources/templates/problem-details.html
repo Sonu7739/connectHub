@@ -53,80 +53,76 @@
                 <h2>Solutions</h2>
             </div>
 
-            <div th:if="${solutions == null or #lists.isEmpty(solutions)}" class="empty-state">
-                <p>No solutions yet.</p>
-            </div>
-
-            <div class="solution-card"
-                 th:each="solution : ${solutions}"
-                 th:id="'solution-' + ${solution.id}">
-
-                <div class="solution-content">
-                    <p th:text="${solution.content}" style="color:#111827;"></p>
+            <div id="solutions-list">
+                <div th:if="${solutions == null or #lists.isEmpty(solutions)}" class="empty-state">
+                    <p>No solutions yet.</p>
                 </div>
 
-                <div class="solution-meta">
-                    By:
-                    <span th:if="${solution.user != null}">
-                        <a th:href="@{'/profile/' + ${solution.user.username}}"
-                           th:text="${solution.user.username}"></a>
-                    </span>
-                    <span th:if="${solution.user == null}">Unknown User</span>
-                </div>
+                <div class="solution-card"
+                     th:each="solution : ${solutions}"
+                     th:id="'solution-' + ${solution.id}">
 
-                <div class="solution-actions">
-                    <button type="button"
-                            class="like-btn ajax-like-btn"
-                            th:attr="data-solution-id=${solution.id}"
-                            style="color:#111827;">
-                        💙 Like
-                    </button>
-
-                    <span class="like-count"
-                          th:id="'like-count-' + ${solution.id}">
-                        0 likes
-                    </span>
-
-                    <button type="button"
-                            class="secondary-btn toggle-comments-btn"
-                            th:attr="data-target='comments-box-' + ${solution.id}"
-                            style="color:#111827;">
-                        Comment
-                    </button>
-
-                    <a th:if="${solution.user != null and currentUsername == solution.user.username}"
-                       th:href="@{'/solution/' + ${solution.id} + '/edit'}"
-                       class="primary-link-btn">
-                        Edit
-                    </a>
-
-                    <form th:if="${solution.user != null and currentUsername == solution.user.username}"
-                          th:action="@{'/solution/' + ${solution.id} + '/delete'}"
-                          method="post">
-                        <button type="submit"
-                                class="secondary-btn"
-                                onclick="return confirm('Delete this solution permanently?')">
-                            Delete
-                        </button>
-                    </form>
-                </div>
-
-                <div class="comments-section hidden-comments"
-                     th:id="'comments-box-' + ${solution.id}">
-                    <h5>Comments</h5>
-
-                    <div class="comments-list" th:id="'comments-list-' + ${solution.id}">
+                    <div class="solution-content">
+                        <p th:text="${solution.content}" style="color:#111827;"></p>
                     </div>
 
-                    <form action="javascript:void(0);"
-                          class="comment-form ajax-comment-form"
-                          th:attr="data-solution-id=${solution.id}">
-                        <input type="text"
-                               name="content"
-                               placeholder="Write a comment..."
-                               required>
-                        <button type="submit" class="primary-btn">Post</button>
-                    </form>
+                    <div class="solution-meta">
+                        By:
+                        <span th:if="${solution.user != null}">
+                    <a th:href="@{'/profile/' + ${solution.user.username}}"
+                       th:text="${solution.user.username}"></a>
+                </span>
+                        <span th:if="${solution.user == null}">Unknown User</span>
+                    </div>
+
+                    <div class="solution-actions">
+                        <button type="button"
+                                class="like-btn ajax-like-btn"
+                                th:attr="data-solution-id=${solution.id}"
+                                style="color:#111827;">
+                            💙 Like
+                        </button>
+
+                        <span class="like-count"
+                              th:id="'like-count-' + ${solution.id}">0 likes</span>
+
+                        <button type="button"
+                                class="secondary-btn toggle-comments-btn"
+                                th:attr="data-target='comments-box-' + ${solution.id}"
+                                style="color:#111827;">
+                            Comment
+                        </button>
+
+                        <a th:if="${solution.user != null and currentUsername == solution.user.username}"
+                           th:href="@{'/solution/' + ${solution.id} + '/edit'}"
+                           class="primary-link-btn">
+                            Edit
+                        </a>
+
+                        <form th:if="${solution.user != null and currentUsername == solution.user.username}"
+                              th:action="@{'/solution/' + ${solution.id} + '/delete'}"
+                              method="post">
+                            <button type="submit"
+                                    class="secondary-btn"
+                                    onclick="return confirm('Delete this solution permanently?')">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="comments-section hidden-comments"
+                         th:id="'comments-box-' + ${solution.id}">
+                        <h5>Comments</h5>
+
+                        <div class="comments-list" th:id="'comments-list-' + ${solution.id}"></div>
+
+                        <form action="javascript:void(0);"
+                              class="comment-form ajax-comment-form"
+                              th:attr="data-solution-id=${solution.id}">
+                            <input type="text" name="content" placeholder="Write a comment..." required>
+                            <button type="submit" class="primary-btn">Post</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </section>
@@ -273,7 +269,7 @@
             });
         }
 
-        function attachSolutionHandler(form) {
+      function attachSolutionHandler(form) {
     if (!form) return;
 
     form.addEventListener("submit", async function (e) {
