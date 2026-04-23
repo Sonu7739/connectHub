@@ -274,102 +274,43 @@
         }
 
         function attachSolutionHandler(form) {
-            if (!form) return;
+    if (!form) return;
 
-            form.addEventListener("submit", async function (e) {
-                e.preventDefault();
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-                const problemId = this.dataset.problemId;
-                const textarea = this.querySelector('textarea[name="content"]');
-                const content = textarea.value.trim();
+        const problemId = this.dataset.problemId;
+        const textarea = this.querySelector('textarea[name="content"]');
+        const content = textarea.value.trim();
 
-                if (!content) return;
+        if (!content) return;
 
-                try {
-                    const formData = new URLSearchParams();
-                    formData.append("content", content);
+        try {
+            const formData = new URLSearchParams();
+            formData.append("content", content);
 
-                    const response = await fetch(`/api/problem/${problemId}/solution/add`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded",
-                            "X-Requested-With": "XMLHttpRequest"
-                        },
-                        body: formData.toString()
-                    });
-
-                    if (!response.ok) throw new Error("Add solution failed");
-
-                    const data = await response.json();
-                    const solutionsSection = document.getElementById("solutions-section");
-                    const emptyState = solutionsSection ? solutionsSection.querySelector(".empty-state") : null;
-
-                    if (emptyState) {
-                        emptyState.remove();
-                    }
-
-                    const newCard = document.createElement("div");
-                    newCard.className = "solution-card";
-                    newCard.id = `solution-${data.solutionId}`;
-                    newCard.innerHTML = `
-                        <div class="solution-content">
-                            <p style="color:#111827;">${escapeHtml(data.content)}</p>
-                        </div>
-
-                        <div class="solution-meta">
-                            By:
-                            <span>
-                                <a href="/profile/${encodeURIComponent(data.username)}">${escapeHtml(data.username)}</a>
-                            </span>
-                        </div>
-
-                        <div class="solution-actions">
-                            <button type="button"
-                                    class="like-btn ajax-like-btn"
-                                    data-solution-id="${data.solutionId}"
-                                    style="color:#111827;">
-                                💙 Like
-                            </button>
-
-                            <span class="like-count" id="like-count-${data.solutionId}">0 likes</span>
-
-                            <button type="button"
-                                    class="secondary-btn toggle-comments-btn"
-                                    data-target="comments-box-${data.solutionId}"
-                                    style="color:#111827;">
-                                Comment
-                            </button>
-                        </div>
-
-                        <div class="comments-section hidden-comments" id="comments-box-${data.solutionId}">
-                            <h5>Comments</h5>
-                            <div class="comments-list" id="comments-list-${data.solutionId}"></div>
-
-                            <form action="javascript:void(0);"
-                                  class="comment-form ajax-comment-form"
-                                  data-solution-id="${data.solutionId}">
-                                <input type="text" name="content" placeholder="Write a comment..." required>
-                                <button type="submit" class="primary-btn">Post</button>
-                            </form>
-                        </div>
-                    `;
-
-                    if (solutionsSection) {
-                        solutionsSection.appendChild(newCard);
-
-                        attachLikeHandler(newCard.querySelector(".ajax-like-btn"));
-                        attachToggleHandler(newCard.querySelector(".toggle-comments-btn"));
-                        attachCommentHandler(newCard.querySelector(".ajax-comment-form"));
-                    }
-
-                    textarea.value = "";
-                    showToast("Solution added successfully!");
-                } catch (error) {
-                    console.error(error);
-                    location.reload();
-                }
+            const response = await fetch(`/api/problem/${problemId}/solution/add`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                body: formData.toString()
             });
+
+            if (!response.ok) {
+                throw new Error("Add solution failed");
+            }
+
+            await response.json();
+
+            textarea.value = "";
+            location.reload();
+        } catch (error) {
+            console.error("Add solution error:", error);
         }
+    });
+}
 
         document.querySelectorAll(".ajax-like-btn").forEach(attachLikeHandler);
         document.querySelectorAll(".toggle-comments-btn").forEach(attachToggleHandler);
