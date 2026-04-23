@@ -5,6 +5,18 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
+        #top-navbar{
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    transition: transform 0.35s ease, opacity 0.35s ease, background 0.35s ease;
+}
+
+#top-navbar.nav-hidden{
+    opacity: 0;
+    transform: translateY(-25px);
+    pointer-events: none;
+}
         .home-shell{
             max-width: 1400px;
             margin: 24px auto;
@@ -480,7 +492,7 @@
 </head>
 <body>
 
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div id="top-navbar" th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div th:if="${successMessage}" class="toast-msg">
     <span th:text="${successMessage}"></span>
@@ -669,6 +681,20 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+    const topNavbar = document.getElementById("top-navbar");
+
+function handleNavbarVisibility() {
+    if (!topNavbar) return;
+
+    if (window.scrollY > 80) {
+        topNavbar.classList.add("nav-hidden");
+    } else {
+        topNavbar.classList.remove("nav-hidden");
+    }
+}
+
+window.addEventListener("scroll", handleNavbarVisibility);
+handleNavbarVisibility();
 
         function escapeHtml(text) {
             const div = document.createElement("div");
